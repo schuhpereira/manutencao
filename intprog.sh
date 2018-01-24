@@ -2,8 +2,8 @@
 
 # Este script realiza a instalação de programas 
 # Criado por Eduardo Schuh Pereira
-# Versão 1.0.6
-# última edição dia 16/07/17
+# Versão 1.1
+# última edição dia 24/01/18
 
 	while [[ true ]]; do
 	# Menu com opções para realizar o bakup.
@@ -34,23 +34,24 @@
 		  	"PlayOnLinux" \
 		  	"EclipseNeon" \
 		  	"Emulador-PSP" \
+		  	"PulseEffects" \
 		  	"HandBrake" \
 		  	"Steam" \
 		  	"Gimp" \
+		  	"XtremeDownloadManager" \
+		  	"Nemo" \
+		  	"RetroArch" \
+		  	"Samba" \
 			"Sair" )
 	
 	case "$opcao" in 
 
 	Google-Drive )
-		sudo add-apt-repository ppa:thefanclub/grive-tools
-		sleep 2
-		sudo add-apt-repository ppa:nilarimogard/webupd8
-		sleep 2
-		sudo sed -i 's/xenial/vivid/g' /etc/apt/sources.list.d/thefanclub-ubuntu-grive-tools-xenial.list
-		sleep 2
-		sudo apt-get update
-		sleep 2	
-		sudo apt-get install grive-tools -y
+		sudo rm -r /etc/apt/sources.list.d/insync*
+		sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys ACCAF35C
+		echo deb http://apt.insynchq.com/ubuntu zesty non-free contrib | sudo tee /etc/apt/sources.list.d/insync.list
+		sudo apt update
+		sudo apt install -y --reinstall insync insync-nemo
 	;;
 
 		# Instala o Telegram desktop via apt-get
@@ -64,13 +65,14 @@
 	
 	# Instala cliente Whatsapp para linux
 	Whatsapp ) 
-        sudo apt-key adv --keyserver pool.sks-keyservers.net --recv-keys 1537994D
+		cd /home/ragnar/Downloads/
+        wget https://github.com/Enrico204/Whatsapp-Desktop/releases/download/v0.4.2/whatsapp-desktop_0.4.2-1_amd64.deb -O whatsappV0.4.2.deb
         sleep 1
-        echo "deb http://dl.bintray.com/aluxian/deb stable main" | sudo tee /etc/apt/sources.list.d/whatsie.list
+        sudo dpkg -i whatsapp.deb
         sleep 1
-        sudo apt-get update
+        sudo apt-get install -f
         sleep 1
-        sudo apt-get install whatsie
+        sudo apt install ./whatsapp.deb
     ;;
 
     Instagram )
@@ -86,10 +88,13 @@
     ;;
 
 	# Instala o Spotify via apt-get
-	Spotify) sudo sh -c "echo 'deb http://repository.spotify.com stable non-free' >> /etc/apt/sources.list.d/spotify.list"
-		sleep 3
+	Spotify) 
+		sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0DF731E45CE24F27EEEB1450EFDC8610341D9410
+		sleep 1
+		echo deb http://repository.spotify.com stable non-free | sudo tee /etc/apt/sources.list.d/spotify.list
+		sleep 2
 		sudo apt-get update
-		sleep 3
+		sleep 2
 		sudo apt-get install spotify-client -y
 
 	;;
@@ -104,19 +109,23 @@
 	# Instala VLC Player via apt-get
 	Vlc) 
 		sudo add-apt-repository ppa:videolan/stable-daily
-		sleep 3
+		sleep 1
 		sudo apt-get update
-		sleep 3
+		sleep 1
+		sudo apt-get dist-upgrade
+		sleep 1
 		sudo apt-get install vlc -y
 	;;
 
 	# Instala Sublime text via apt-get
 	Sublime-Text-3) 
-		sudo add-apt-repository ppa:webupd8team/sublime-text-3
-		sleep 3
+		sudo wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add
+		sleep 1
+		echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list
+		sleep 1
 		sudo apt-get update
-		sleep 3
-		sudo apt-get install sublime-text-installer -y
+		sleep 1
+		sudo apt-get install sublime-text -y
 	;;
 
 	# Instala Qbittorrent via apt-get
@@ -166,11 +175,13 @@
 
 	# Instala Java via apt-get
 	Java)  
+		sudo apt-get purge openjdk*
+		sleep 1
 		sudo add-apt-repository ppa:webupd8team/java 
-		sleep 3
+		sleep 1
 		sudo apt-get update
-		sleep 3
-		sudo apt-get install oracle-java8-installer -y
+		sleep 1
+		sudo apt-get install oracle-java9-installer -y
 	;;
 
 	# Instala Team Viewer 
@@ -220,13 +231,12 @@
     Skype ) 
         cd /home/schuh/Arquivos/Download/Programas/
         sleep 2
-        wget https://go.skype.com/skypeforlinux-64-alpha.deb -O skype.deb
-        sleep 2
-        sudo apt-get update
-        sleep 2
-        sudo dpkg -i skype.deb
-        sleep 2
-        sudo apt-get install -f
+        sudo rm -rf /etc/apt/sources.list.d/skypeforlinux*
+		curl https://repo.skype.com/data/SKYPE-GPG-KEY | sudo apt-key add -
+		echo "deb https://repo.skype.com/deb stable main" | sudo tee /etc/apt/sources.list.d/skypeforlinux.list
+		sudo apt update
+		sudo apt install -y --reinstall skypeforlinux
+		sudo rm -rf /etc/apt/sources.list.d/skypeforlinux.list
     ;;
     
     # Instala programa Wireshark, um programa para capturar pacotes na rede
@@ -249,23 +259,15 @@
     
     # Instala programa KDEnlive, editor de vídeo
     KDEnlive )
-        sudo add-apt-repository sudo add-apt-repository ppa:kdenlive/kdenlive-stable
-        sleep 1
-        sudo apt-get update
-        sleep 1
-        sudo apt-get install kdenlive
+        sudo rm -rf /etc/apt/sources.list.d/kdenlive*
+		sudo add-apt-repository -y ppa:kdenlive/kdenlive-stable
+		sudo apt update
+		sudo apt install -y --reinstall breeze-icon-theme kde-style-breeze kdenlive
+		sudo sed -i 's/Icon=kdenlive/Icon=\/usr\/share\/icons\/hicolor\/48x48\/apps\/kdenlive.png/g' /usr/share/applications/org.kde.kdenlive.desktop
     ;;
 
     PlayOnLinux )
-    	sudo sudo add-apt-repository ppa:noobslab/apps
-    	sleep 1
-    	sudo apt-get update
-    	sleep 1
-    	sudo apt-get install winetricks
-    	sleep 1
-    	sudo apt-get install wine
-    	sleep 1
-    	sudo apt-get install playonlinux
+    	/home/ragnar/Arquivos/Scripts/instalacoes/playonlinux.sh
     ;;
 
     EclipseNeon )
@@ -287,6 +289,18 @@
     	sleep 1
     	sudo apt-get install ppsspp-sdl
     	;;
+
+    PulseEffects )
+		sudo rm -rf /etc/apt/sources.list.d/dumalogiya-artful*
+		sleep 1
+		wget -q -O- http://repo.dumalogiya.ru/keys/mikhailnov_pub.gpg | sudo apt-key add -
+		sleep 1
+		echo "deb http://repo.dumalogiya.ru/aptly/public artful main" | sudo tee /etc/apt/sources.list.d/dumalogiya-artful.list
+		sleep 1
+		sudo apt update
+		sleep 1
+		sudo apt install -y --reinstall pulseeffects
+		;;
 
     HandBrake )
     	sudo add-apt-repository ppa:stebbins/handbrake-releases
@@ -314,6 +328,26 @@
 		sudo apt-get install gimp gimp-gmic gmic -y 
 		sleep 1
 		sudo apt-get install gimp-plugin-registry -y
+		;;
+
+	XtremeDownloadManager )
+		sudo rm -rf /etc/apt/sources.list.d/noobslab-ubuntu-apps*
+		sudo add-apt-repository -y ppa:noobslab/apps
+		sudo sed -i 's/artful/zesty/g' /etc/apt/sources.list.d/noobslab-ubuntu-apps*
+		sudo apt update
+		sudo apt install -y --reinstall xdman-downloader
+		;;
+
+	Nemo )
+		/home/ragnar/Arquivos/Scripts/instalacoes/nemo.sh
+		;;
+
+	RetroArch )
+		/home/ragnar/Arquivos/Scripts/instalacoes/retroarch.sh
+		;;
+
+	Samba )
+		/home/ragnar/Arquivos/Scripts/instalacoes/samba.sh
 		;;
 
 	*) break 
